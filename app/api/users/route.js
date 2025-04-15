@@ -1,14 +1,29 @@
+import connectMongoDB from "@/libs/mongodb";
+import User from "@/modals/user";
+import { NextResponse } from "next/server";
+
+
+//post method to create a new user
 
 export async function POST(request) {
-  const { userName, email } = await request.json();
+    const { userName, email } = await request.json();
+    await connectMongoDB();
+    await User.create({ userName, email });
+    return NextResponse.json({ message: "User Created" }, { status: 201 });
+  }
 
-  // Simulate a database insert operation
-  const newUser = { id: Date.now(), userName, email };
+// GET method to fetch all users
 
-  return new Response(JSON.stringify(newUser), {
-    status: 201,
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  });
+export async function GET(){
+    await connectMongoDB();
+    const users = await User.find();
+    return NextResponse.json(users, { status: 200 });
 }
+
+
+export async function DELETE(request) {
+    const id = request.nextUrl.searchParams.get("id");
+    await connectMongoDB();
+    await User.findByIdAndDelete(id);
+    return NextResponse.json({ message: "User deleted" }, { status: 200 });
+  }
