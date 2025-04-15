@@ -1,7 +1,18 @@
 import EditUserForm from "@/components/EditUserForm";
 
-export default function EditUser() {
+const getUser = async (id) => {
+    const res = await fetch(`http://localhost:3000/api/users/${id}`);
+    if (!res.ok) {
+        throw new Error("Failed to fetch data");
+    }
+    return res.json();
+}
+
+export default async function EditUser({params}) {
+const { id } = params;
+const user = await getUser(id);
+console.log(user?.user);
     return (
-   <EditUserForm/>
+   <EditUserForm userData={user?.user}/>
     );
     }
